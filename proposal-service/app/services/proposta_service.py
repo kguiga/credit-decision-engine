@@ -1,11 +1,14 @@
-propostas = []
+from app.repositories.proposta_repository import listar_propostas, buscar_proposta_por_id, salvar_proposta
 
 def get_propostas():
-    return propostas if len(propostas) > 0 else None
+    return listar_propostas()
 
 
 def get_proposta(id: int):
-    for pro in propostas:
-        if pro["id"] == id:
-            return pro
-    return None
+    return buscar_proposta_por_id(id)
+
+
+def criar_proposta(proposta: dict):
+    if buscar_proposta_por_id(proposta["id"]) is not None:
+        raise ValueError("Proposta com o mesmo ID já existe.")
+    return salvar_proposta(proposta)
