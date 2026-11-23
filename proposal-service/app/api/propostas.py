@@ -7,7 +7,7 @@ router = APIRouter()
 @router.post("/propostas", status_code=201)
 async def cria_proposta(proposta: RequestProposta):
     try:
-        proposta_service.criar_proposta(proposta.dict())
+        proposta_service.criar_proposta(proposta)
     except ValueError as e:
         raise HTTPException(status_code=409, detail=str(e))
     return {
@@ -25,7 +25,6 @@ async def get_propostas():
         "propostas": []
     }
     return propostas
-
 
 
 @router.get("/propostas/{id}")

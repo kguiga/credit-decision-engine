@@ -1,16 +1,28 @@
-propostas = []
+from app.core.database import SessionLocal
+from app.models.proposta import Proposta
 
 def listar_propostas():
-    return propostas if len(propostas) > 0 else None
+    session = SessionLocal()
+    try:
+        return session.query(Proposta).all()
+    finally:
+        session.close()
 
 
 def buscar_proposta_por_id(id):
-    for pro in propostas:
-        if pro["id"] == id:
-            return pro
-    return None
+    session = SessionLocal()
+    try:
+        return session.query(Proposta).where(Proposta.id == id).first()
+    finally:
+        session.close()
 
 
 def salvar_proposta(proposta):
-    propostas.append(proposta)
-    return proposta
+    session = SessionLocal()
+    try:
+        session.add(proposta)
+        session.commit()
+        return proposta
+        
+    finally:
+        session.close()
