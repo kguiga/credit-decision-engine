@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 class RequestProposta(BaseModel):
    
-    id: str = Field(..., description="ID da proposta", max_length=36)
+    id: str = Field(..., description="ID da proposta", max_length=36, min_length=1)
     cpf: str = Field(..., description="CPF do solicitante", max_length=11, min_length=11)
     nome: str = Field(..., description="Nome do solicitante", max_length=100)
     idade: int = Field(..., description="Idade do solicitante", ge=0)
