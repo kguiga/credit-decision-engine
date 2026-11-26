@@ -1,84 +1,40 @@
-from fastapi.testclient import TestClient
-from main import app
+import pytest
+from tests.mocks.propostas import PROPOSTAS_MOCK
 
-client = TestClient(app)
 
-PROPOSTA_VALIDA = {
-                "id": "PROP-999",
-                "cpf": "12345678901",
-                "nome": "Cliente Teste 1",
-                "idade": 25,
-                "renda": 3000,
-                "produto": "CARTAO"
-            }
-
-def test_cria_proposta():
-    response = client.post(
-        "/propostas",
-        json=PROPOSTA_VALIDA
-    )
+@pytest.mark.parametrize("proposta", PROPOSTAS_MOCK)
+def test_cria_proposta(client, proposta, limpar_bd_teste):
+    response = client.post( "/propostas", json=proposta)
 
     assert response.status_code == 201
+    body = response.json()
+    assert body["proposta"]["id"] == proposta['id']
 
 
-def test_busca_lista_propostas():
+def test_busca_lista_propostas(client, limpar_bd_teste):
+    for proposta in PROPOSTAS_MOCK:
+        client.post("/propostas", json=proposta)
+
     response = client.get(
         "/propostas",
     )
 
+    body = response.json()
     assert response.status_code == 200
+    assert len(body) == len(PROPOSTAS_MOCK)
 
 
-def test_busca_proposta_por_id():
+@pytest.mark.parametrize("proposta", PROPOSTAS_MOCK)
+def test_busca_proposta_por_id(client, proposta, limpar_bd_teste):
     client.post(
         "/propostas",
-        json=PROPOSTA_VALIDA
+        json=proposta
     )
     response = client.get(
-        f"/propostas/{PROPOSTA_VALIDA['id']}"
+        f"/propostas/{proposta['id']}"
     )
 
+    body = response.json()
     assert response.status_code == 200
-    assert response.json() == PROPOSTA_VALIDA
-from fastapi.testclient import TestClient
-from main import app
-
-client = TestClient(app)
-
-PROPOSTA_VALIDA = {
-                "id": "PROP-999",
-                "cpf": "12345678901",
-                "nome": "Cliente Teste 1",
-                "idade": 25,
-                "renda": 3000,
-                "produto": "CARTAO"
-            }
-
-def test_cria_proposta():
-    response = client.post(
-        "/propostas",
-        json=PROPOSTA_VALIDA
-    )
-
-    assert response.status_code == 201
-
-
-def test_busca_lista_propostas():
-    response = client.get(
-        "/propostas",
-    )
-
-    assert response.status_code == 200
-
-
-def test_busca_proposta_por_id():
-    client.post(
-        "/propostas",
-        json=PROPOSTA_VALIDA
-    )
-    response = client.get(
-        f"/propostas/{PROPOSTA_VALIDA['id']}"
-    )
-
-    assert response.status_code == 200
-    assert response.json() == PROPOSTA_VALIDA
+    assert body["message"] == "Proposta encontrada"
+    assert body["proposta"] == proposta

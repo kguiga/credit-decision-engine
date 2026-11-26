@@ -23,3 +23,12 @@ try:
         print("Conexão com PostgreSQL realizada com sucesso!")
 except Exception as e:
     print(f"Erro ao conectar: {e}")
+
+
+def get_test_db():
+    session = SessionLocal()
+    try:
+        yield session
+        
+    finally:
+        session.close()
