@@ -1,4 +1,3 @@
-from app.core.database import SessionLocal
 from app.models.proposta import Proposta
 
 def listar_propostas(session):
